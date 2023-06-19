@@ -5,13 +5,21 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Dapper;
+using Dapper.Entities;
+using Dapper.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Dappper.Managers
 {
     public class ProductManager : IManager<Product>
     {
-        SqlConnection connection = new("Data Source=DESKTOP-EF44UM4\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True;TrustServerCertificate=True");
+        // I will receive the Connection String from the Context of the EF 
+        SqlConnection connection;
+
+        public ProductManager(NorthwindContext context)
+        {
+            connection = new SqlConnection(context.Database.GetConnectionString());
+        }
         /// Raw SQL
         public bool Add(Product product)
         {
@@ -74,12 +82,13 @@ namespace Dappper.Managers
             }
         }
 
-        /// SP + Execute 
+        /// SP + Execute  
+        /// I will update this function because the given product has alot of attributes that I don't need
         public bool Update(Product product)
         {
             return connection.Execute(
                 "UpdateProductNameById",
-                new {product.ProductID , product.ProductName},
+                new { product.ProductID, product.ProductName },
                 commandType: System.Data.CommandType.StoredProcedure) > 0;
         }
     }

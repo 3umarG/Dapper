@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Dapper.Context;
 using Dappper.Managers;
 
 internal class Program
@@ -7,8 +8,9 @@ internal class Program
     {
 
         #region Dapper CRUD Operations
-        ProductManager manager = new();
         /*
+        ProductManager manager = new();
+
         // Add
        if( manager.Add(new Product() { ProductName = "New Product From Dapper" ,Discontinued = false }))
         {
@@ -45,7 +47,24 @@ internal class Program
         {
             Console.WriteLine("Error in Removing");
         }
-        */ 
+        */
+        #endregion
+
+
+        #region EntityFramework with Dapper 
+        using(NorthwindContext context = new())
+        {
+            var manager = new ProductManager(context);
+
+            var results = manager.GetAll();
+
+            foreach (var product in results)
+            {
+                Console.WriteLine($"Product with ID : {product.ProductID} , has Name : {product.ProductName}");
+            }
+
+        }
+
         #endregion
     }
 
